@@ -44,6 +44,15 @@ class ViewController: UIViewController {
     
     @IBAction func resetAction(_ sender: Any) {
         
+        self.timer.stop()
+        self.restoreTimer()
+        self.playButton.isEnabled = true
+        self.timerLabel.text = "Game is reset"
+        
+        sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
+            node.removeFromParentNode()
+        }
+        
     }
     
     func addNode() {
