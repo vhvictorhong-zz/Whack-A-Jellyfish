@@ -8,12 +8,18 @@
 
 import UIKit
 import ARKit
+import Each
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var play: UIButton!
+
+    @IBOutlet weak var timerLabel: UILabel!
+    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var sceneView: ARSCNView!
     let configuration = ARWorldTrackingConfiguration()
+    
+    var timer = Each(1).seconds
+    var countdown = 10
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +37,9 @@ class ViewController: UIViewController {
 
     @IBAction func play(_ sender: Any) {
         
+        self.setTimer()
         self.addNode()
-        self.play.isEnabled = false
+        self.playButton.isEnabled = false
         
     }
     
@@ -70,6 +77,8 @@ class ViewController: UIViewController {
                 self.animateNode(node: node)
                 SCNTransaction.completionBlock = {
                     node.removeFromParentNode()
+                    self.addNode()
+                    self.restoreTimer()
                 }
                 SCNTransaction.commit()
             }
@@ -90,8 +99,30 @@ class ViewController: UIViewController {
         
     }
     
+    func randomNumbers(firstNum: CGFloat, secondNum: CGFloat) -> CGFloat {
+        return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * abs(firstNum - secondNum) + min(firstNum, secondNum)
+    }
+    
+    func setTimer() {
+        self.timer.perform { () -> NextStep in
+            self.countdown -= 1
+            self.timerLabel.text = String(self.countdown)
+            
+            if self.countdown == 0 {
+                self.timerLabel.text = "You Lose"
+                return .stop
+            }
+            
+            return .continue
+            
+        }
+    }
+    
+    func restoreTimer() {
+        self.countdown = 10
+        self.timerLabel.text = String(self.countdown)
+    }
+    
 }
 
-func randomNumbers(firstNum: CGFloat, secondNum: CGFloat) -> CGFloat {
-    return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * abs(firstNum - secondNum) + min(firstNum, secondNum)
-}
+
