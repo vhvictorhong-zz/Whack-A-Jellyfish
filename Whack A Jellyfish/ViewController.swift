@@ -12,14 +12,13 @@ import Each
 
 class ViewController: UIViewController {
 
-
+    var timer = Each(1).seconds
+    var countdown = 10
+    
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var sceneView: ARSCNView!
     let configuration = ARWorldTrackingConfiguration()
-    
-    var timer = Each(1).seconds
-    var countdown = 10
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +34,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func play(_ sender: Any) {
+    @IBAction func playAction(_ sender: Any) {
         
         self.setTimer()
         self.addNode()
@@ -43,7 +42,7 @@ class ViewController: UIViewController {
         
     }
     
-    @IBAction func reset(_ sender: Any) {
+    @IBAction func resetAction(_ sender: Any) {
         
     }
     
@@ -70,19 +69,20 @@ class ViewController: UIViewController {
         if hitTest.isEmpty {
             print("didn't touch anything")
         } else {
-            let results = hitTest.first!
-            let node = results.node
-            if node.animationKeys.isEmpty {
-                SCNTransaction.begin()
-                self.animateNode(node: node)
-                SCNTransaction.completionBlock = {
-                    node.removeFromParentNode()
-                    self.addNode()
-                    self.restoreTimer()
+            if countdown > 0 {
+                let results = hitTest.first!
+                let node = results.node
+                if node.animationKeys.isEmpty {
+                    SCNTransaction.begin()
+                    self.animateNode(node: node)
+                    SCNTransaction.completionBlock = {
+                        node.removeFromParentNode()
+                        self.addNode()
+                        self.restoreTimer()
+                    }
+                    SCNTransaction.commit()
                 }
-                SCNTransaction.commit()
             }
-            
         }
         
     }
