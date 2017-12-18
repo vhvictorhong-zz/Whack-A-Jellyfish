@@ -66,8 +66,12 @@ class ViewController: UIViewController {
             let results = hitTest.first!
             let node = results.node
             if node.animationKeys.isEmpty {
+                SCNTransaction.begin()
                 self.animateNode(node: node)
-                node.removeFromParentNode()
+                SCNTransaction.completionBlock = {
+                    node.removeFromParentNode()
+                }
+                SCNTransaction.commit()
             }
             
         }
